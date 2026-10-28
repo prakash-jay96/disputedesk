@@ -1,0 +1,142 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>DisputeDesk</title>
+<link rel="stylesheet" href="/static/styles.css">
+</head>
+<body>
+<header class="topbar">
+  <div class="brand">
+    <span class="brand-mark" aria-hidden="true">
+      <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M12 3 4 6v6c0 4.2 3.1 7.8 8 9 4.9-1.2 8-4.8 8-9V6l-8-3Z"/>
+        <path d="m9 12 2 2 4-4"/>
+      </svg>
+    </span>
+    <div>
+      <h1>DisputeDesk</h1>
+      <p class="tagline">AI dispute responses for PayPal sellers</p>
+    </div>
+  </div>
+
+  <dl class="stats" id="stats" aria-label="Dispute statistics">
+    <div class="stat"><dt>Open disputes</dt><dd id="stat-open">&mdash;</dd></div>
+    <div class="stat"><dt>At risk</dt><dd id="stat-risk">&mdash;</dd></div>
+    <div class="stat stat-good"><dt>Protected</dt><dd id="stat-protected">&mdash;</dd></div>
+    <div class="stat"><dt>Hours saved</dt><dd id="stat-hours">&mdash;</dd></div>
+  </dl>
+
+  <div class="badges" id="badges"></div>
+</header>
+
+<main class="layout">
+  <section class="inbox" aria-label="Dispute inbox">
+    <div class="inbox-head">
+      <h2>Inbox</h2>
+      <button class="btn-ghost" id="btn-reset" title="Restore the demo fixtures">Reset demo</button>
+    </div>
+    <ul class="dispute-list" id="dispute-list"></ul>
+  </section>
+
+  <section class="detail" id="detail" aria-live="polite">
+    <div class="empty-state" id="empty-state">
+      <p>Select a dispute to see the claim and run the agent.</p>
+    </div>
+    <div id="detail-body" hidden></div>
+  </section>
+</main>
+
+<template id="tpl-detail">
+  <div class="claim">
+    <div class="claim-head">
+      <div>
+        <p class="eyebrow"><span data-f="dispute_id"></span> &middot; <span data-f="stage"></span></p>
+        <h2 data-f="item_name"></h2>
+        <p class="claim-meta">
+          <span data-f="buyer_name"></span> &middot; order <span data-f="order_id"></span>
+        </p>
+      </div>
+      <div class="claim-amount">
+        <span class="amount" data-f="amount"></span>
+        <span class="reason-chip" data-f="reason_label"></span>
+      </div>
+    </div>
+    <div class="claim-strip">
+      <span class="due" data-f="due"></span>
+      <span class="status-chip" data-f="status"></span>
+    </div>
+    <blockquote class="buyer-message" data-f="buyer_message"></blockquote>
+    <div class="actions">
+      <button class="btn-primary" data-el="run">Run agent</button>
+      <span class="run-hint" data-el="run-hint"></span>
+    </div>
+  </div>
+
+  <div class="panel" data-el="trace-panel" hidden>
+    <h3>Agent trace</h3>
+    <ol class="timeline" data-el="timeline"></ol>
+  </div>
+
+  <div class="panel recommendation" data-el="rec-panel" hidden>
+    <div class="rec-head">
+      <div>
+        <span class="action-badge" data-el="action-badge"></span>
+        <h3 data-el="rec-summary"></h3>
+      </div>
+      <div class="confidence">
+        <span class="confidence-label">Confidence <b data-el="conf-value"></b></span>
+        <div class="confidence-bar"><span data-el="conf-fill"></span></div>
+        <span class="engine-note" data-el="engine-note"></span>
+      </div>
+    </div>
+
+    <div class="rec-grid">
+      <div>
+        <h4>Reasoning</h4>
+        <ol class="reasoning" data-el="reasoning"></ol>
+        <div data-el="risk-wrap" hidden>
+          <h4>Before you approve</h4>
+          <ul class="risks" data-el="risks"></ul>
+        </div>
+      </div>
+      <div>
+        <h4>Evidence to file</h4>
+        <ul class="evidence" data-el="evidence"></ul>
+        <div data-el="offer-wrap" hidden>
+          <h4>Offer</h4>
+          <div class="offer-row">
+            <select data-el="offer-type"></select>
+            <div class="money-input">
+              <span data-el="offer-currency"></span>
+              <input type="text" inputmode="decimal" data-el="offer-amount">
+            </div>
+          </div>
+          <p class="hint" data-el="offer-cap"></p>
+        </div>
+      </div>
+    </div>
+
+    <h4>Note to PayPal <span class="counter" data-el="note-count"></span></h4>
+    <textarea data-el="note" rows="7" maxlength="2000"></textarea>
+
+    <h4>Message to the buyer</h4>
+    <textarea data-el="buyer-message" rows="4" maxlength="2000"></textarea>
+    <label class="checkbox"><input type="checkbox" data-el="send-message" checked> Send this to the buyer with the response</label>
+
+    <div class="approve-row">
+      <button class="btn-approve" data-el="approve">Approve &amp; submit to PayPal</button>
+      <span class="approve-note">Nothing has been sent to PayPal yet.</span>
+    </div>
+  </div>
+
+  <div class="panel result" data-el="result-panel" hidden>
+    <h3>PayPal response</h3>
+    <div data-el="result-body"></div>
+  </div>
+</template>
+
+<script src="/static/app.js"></script>
+</body>
+</html>

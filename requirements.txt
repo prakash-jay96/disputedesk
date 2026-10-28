@@ -1,0 +1,7 @@
+# Pinned to the versions this project was built and tested against.
+fastapi==0.162.0
+uvicorn[standard]==0.54.0
+anthropic==2.3.0
+httpx==0.28.1
+python-multipart==0.0.32
+pytest==9.2.0
