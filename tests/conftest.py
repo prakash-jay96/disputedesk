@@ -13,6 +13,12 @@ def isolated_env(tmp_path, monkeypatch):
     monkeypatch.delenv("PAYPAL_CLIENT_ID", raising=False)
     monkeypatch.delenv("PAYPAL_CLIENT_SECRET", raising=False)
 
+    # Never read a developer's real .env during tests: it could hand the suite a
+    # live API key and turn these into billable calls.
+    from app import env as app_env
+
+    monkeypatch.setattr(app_env, "_loaded", True)
+
     from app import db
     from app.paypal import reset_client
 

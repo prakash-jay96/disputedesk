@@ -4,6 +4,8 @@ from __future__ import annotations
 import os
 from dataclasses import dataclass, field
 
+from .env import load_once
+
 
 def _env(name: str, default: str = "") -> str:
     return (os.environ.get(name) or default).strip()
@@ -27,6 +29,9 @@ class Settings:
 
     # --- App ---
     db_path: str = field(default_factory=lambda: _env("DISPUTEDESK_DB", "disputedesk.db"))
+    seller_store_file: str = field(
+        default_factory=lambda: _env("SELLER_STORE_FILE", "data/store.json")
+    )
     seller_hourly_rate: float = field(default_factory=lambda: float(_env("SELLER_HOURLY_RATE", "35")))
     minutes_saved_per_dispute: int = field(
         default_factory=lambda: int(_env("MINUTES_SAVED_PER_DISPUTE", "45"))
@@ -48,4 +53,5 @@ class Settings:
 
 def get_settings() -> Settings:
     """Read fresh each call so tests can monkeypatch os.environ."""
+    load_once()
     return Settings()

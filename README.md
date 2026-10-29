@@ -102,7 +102,10 @@ uvicorn app.main:app --reload
 ```
 
 The header badge switches to the model name and the trace shows the real tool calls, the
-records returned and the token count per turn. Config lives in `.env` — copy `.env.example`:
+records returned and the token count per turn.
+
+Configuration can go in a `.env` file instead — copy `.env.example` to `.env`. The app reads it
+on startup, and real environment variables always take precedence over the file:
 
 | Variable | Default | Notes |
 |---|---|---|
@@ -113,6 +116,7 @@ records returned and the token count per turn. Config lives in `.env` — copy `
 | `PAYPAL_MODE` | `mock` | `mock` or `sandbox` |
 | `PAYPAL_BASE_URL` | `https://api-m.sandbox.paypal.com` | |
 | `PAYPAL_CLIENT_ID` / `PAYPAL_CLIENT_SECRET` | *(unset)* | Required for `sandbox` |
+| `SELLER_STORE_FILE` | `data/store.json` | Your own order records, read in `sandbox` mode |
 
 ### Run against the real PayPal sandbox
 
@@ -125,7 +129,18 @@ records returned and the token count per turn. Config lives in `.env` — copy `
    python scripts/sandbox_check.py
    ```
    It gets a token, lists your disputes, and tells you exactly what is wrong if anything is.
-4. Run with `PAYPAL_MODE=sandbox`.
+4. Give the agent something to read. PayPal holds the dispute; your orders, tracking and
+   refunds live in your own systems, so DisputeDesk reads them from a JSON file:
+   ```bash
+   cp data/store.example.json data/store.json
+   ```
+   Edit it with your real orders. Each record is matched on any of `match.dispute_id`,
+   `match.invoice_number`, `match.transaction_id` or `order.order_id`, so you can file a record
+   under your own order number before the dispute exists. Every section is optional — the agent
+   is told when a record is missing and raises it as a risk flag rather than inventing one.
+   (`data/store.json` is gitignored; swap `SellerStore.lookup` for a database query in a real
+   deployment.)
+5. Run with `PAYPAL_MODE=sandbox`.
 
 **Creating a sandbox dispute to work on:** sandbox accounts start with none.
 Log in to [sandbox.paypal.com](https://sandbox.paypal.com) as your sandbox **buyer**, pay your
@@ -159,13 +174,22 @@ own tool calls.
 ## Tests
 
 ```bash
-pytest -q        # 67 tests, no API key and no network
+pytest -q        # 101 tests, no API key and no network
 ```
 
 Covers the guardrails (over-refunds, disallowed offer types, closed disputes, note length), the
 mock PayPal API, the rules engine against all five fixtures, plan normalisation, the full
-HTTP approve flow, and the Claude loop itself — driven against a stubbed SDK that scripts the
-model's responses, including the case where it never calls the final tool.
+HTTP approve flow, `.env` loading and the seller store adapter.
+
+Two parts are worth calling out, because they are the parts that talk to someone else:
+
+- **The Claude loop** is driven against a stubbed SDK that scripts the model's responses —
+  including parallel tool calls, a turn that ends without the final tool, a refusal, a model
+  that never submits at all, and a plan that tries to over-refund.
+- **The real PayPal client** is driven through `httpx.MockTransport`, asserting the exact wire
+  shapes: OAuth client-credentials with basic auth, token caching and refresh, bearer headers,
+  the `multipart/form-data` body with a JSON part named `input` for provide-evidence, and the
+  documented JSON bodies for make-offer, accept-claim and send-message.
 
 ## Notes on the agent loop
 

@@ -25,8 +25,9 @@ class SandboxDisputeClient:
         client_id: str,
         client_secret: str,
         *,
-        store_lookup=None,
+        store=None,
         timeout: float = 30.0,
+        transport: httpx.BaseTransport | None = None,
     ) -> None:
         if not client_id or not client_secret:
             raise PayPalError(
@@ -36,10 +37,15 @@ class SandboxDisputeClient:
         self._client_id = client_id
         self._client_secret = client_secret
         self._timeout = timeout
-        self._store_lookup = store_lookup
+        self._store = store
         self._token: str | None = None
         self._token_expires_at = 0.0
         self._lock = threading.Lock()
+        # One client for the process; `transport` lets tests drive it without a network.
+        self._http = httpx.Client(base_url=self.base_url, timeout=timeout, transport=transport)
+
+    def close(self) -> None:
+        self._http.close()
 
     # --- auth ---------------------------------------------------------------
 
@@ -48,12 +54,11 @@ class SandboxDisputeClient:
             if self._token and time.time() < self._token_expires_at:
                 return self._token
             try:
-                resp = httpx.post(
-                    f"{self.base_url}{TOKEN_PATH}",
+                resp = self._http.post(
+                    TOKEN_PATH,
                     data={"grant_type": "client_credentials"},
                     auth=(self._client_id, self._client_secret),
                     headers={"Accept": "application/json"},
-                    timeout=self._timeout,
                 )
             except httpx.HTTPError as exc:
                 raise PayPalError(f"could not reach PayPal to get a token: {exc}") from exc
@@ -101,12 +106,14 @@ class SandboxDisputeClient:
     def get_store_record(self, dispute_id: str) -> dict[str, Any] | None:
         """Seller-side data lives in the seller's own systems, not in PayPal.
 
-        In sandbox mode we look it up in whatever store the app was given; a real
-        deployment would point this at the merchant's order database.
+        Matched on the dispute id, the invoice number or the transaction id, so a
+        seller can file a record under their own order number before the dispute
+        exists. A real deployment swaps this for a query against the shop's
+        order database.
         """
-        if self._store_lookup is None:
+        if self._store is None:
             return None
-        return self._store_lookup(dispute_id)
+        return self._store.lookup_for_dispute(self.get_dispute(dispute_id))
 
     # --- writes -------------------------------------------------------------
 
@@ -114,16 +121,14 @@ class SandboxDisputeClient:
         """multipart/form-data with a JSON part named "input", per the API docs."""
         endpoint = f"{DISPUTES_PATH}/{dispute_id}/provide-evidence"
         body = {"evidences": evidences}
-        url = f"{self.base_url}{endpoint}"
         try:
-            resp = httpx.post(
-                url,
+            resp = self._http.post(
+                endpoint,
                 files={"input": (None, json.dumps(body), "application/json")},
                 headers={
                     "Authorization": f"Bearer {self.access_token()}",
                     "Accept": "application/json",
                 },
-                timeout=self._timeout,
             )
         except httpx.HTTPError as exc:
             raise PayPalError(f"PayPal request failed: {exc}") from exc
@@ -158,15 +163,13 @@ class SandboxDisputeClient:
         params: dict[str, Any] | None = None,
         json_body: Any = None,
     ) -> dict[str, Any]:
-        url = f"{self.base_url}{path}"
         try:
-            resp = httpx.request(
+            resp = self._http.request(
                 method,
-                url,
+                path,
                 params=params,
                 json=json_body,
                 headers=self._headers(),
-                timeout=self._timeout,
             )
         except httpx.HTTPError as exc:
             raise PayPalError(f"PayPal request failed: {exc}") from exc

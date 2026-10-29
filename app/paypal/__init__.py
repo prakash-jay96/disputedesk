@@ -21,14 +21,14 @@ def _mock() -> MockDisputeClient:
 
 
 @lru_cache(maxsize=4)
-def _sandbox(base_url: str, client_id: str, client_secret: str) -> SandboxDisputeClient:
-    # Seller-side records still come from the local store in sandbox mode; a real
-    # deployment would swap this lookup for the merchant's order database.
+def _sandbox(
+    base_url: str, client_id: str, client_secret: str, store_file: str
+) -> SandboxDisputeClient:
+    """Real PayPal, with seller records read from the local store file."""
+    from ..store import SellerStore
+
     return SandboxDisputeClient(
-        base_url,
-        client_id,
-        client_secret,
-        store_lookup=_mock().get_store_record,
+        base_url, client_id, client_secret, store=SellerStore.from_file(store_file)
     )
 
 
@@ -36,7 +36,10 @@ def get_client(settings: Settings | None = None) -> DisputeClient:
     settings = settings or get_settings()
     if settings.live_paypal:
         return _sandbox(
-            settings.paypal_base_url, settings.paypal_client_id, settings.paypal_client_secret
+            settings.paypal_base_url,
+            settings.paypal_client_id,
+            settings.paypal_client_secret,
+            settings.seller_store_file,
         )
     return _mock()
 

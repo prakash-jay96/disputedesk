@@ -15,6 +15,9 @@ venv/
 *.db
 *.db-journal
 
+# Real seller records — the example file is committed, yours is not
+data/store.json
+
 # Editors / OS
 .DS_Store
 .idea/

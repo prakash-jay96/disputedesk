@@ -1,0 +1,213 @@
+{
+  "_comment": "Seller-side records DisputeDesk reads in PAYPAL_MODE=sandbox. Copy to data/store.json and fill in with your own orders. A record is matched on any of match.dispute_id, match.invoice_number, match.transaction_id or order.order_id, so you can add a record before the dispute exists. Every section is optional: the agent is told when a record is missing and flags it as a risk.",
+  "records": [
+    {
+      "match": {
+        "dispute_id": "PP-D-10041",
+        "invoice_number": "HF-24181",
+        "transaction_id": "5YJ18402KX9114T"
+      },
+      "order": {
+        "order_id": "HF-24181",
+        "placed_at": "2026-10-17T13:07:51Z",
+        "dispatched_at": "2026-10-19T13:07:51Z",
+        "status": "DELIVERED",
+        "items": [
+          {
+            "sku": "FL-ANC-GR",
+            "name": "Fieldline ANC Headphones \u2014 Graphite",
+            "qty": 1,
+            "unit_price": "149.00"
+          }
+        ],
+        "item_total": "149.00",
+        "shipping_total": "0.00",
+        "order_total": "149.00",
+        "ship_to": {
+          "name": "Daniel Osei",
+          "address_line_1": "41 Pembroke Road",
+          "address_line_2": "Flat 2",
+          "admin_area_2": "Bristol",
+          "postal_code": "BS8 3BA",
+          "country_code": "GB",
+          "paypal_address_status": "CONFIRMED",
+          "matches_paypal_transaction_address": true
+        },
+        "signature_required": true
+      },
+      "tracking": {
+        "carrier_name": "DHL_EXPRESS",
+        "carrier_display": "DHL Express",
+        "tracking_number": "JD0002186417392041",
+        "current_status": "DELIVERED",
+        "delivered_at": "2026-10-21T13:07:51Z",
+        "signed_by": "D OSEI",
+        "signature_image_on_file": true,
+        "delivery_photo_on_file": true,
+        "delivery_photo_note": "Parcel photographed inside the porch, door number 41 visible.",
+        "events": [
+          {
+            "at": "2026-10-19T13:07:51Z",
+            "status": "LABEL_CREATED",
+            "location": "Bristol, GB",
+            "detail": "Shipment information received"
+          },
+          {
+            "at": "2026-10-19T13:07:51Z",
+            "status": "COLLECTED",
+            "location": "Bristol, GB",
+            "detail": "Collected from sender"
+          },
+          {
+            "at": "2026-10-20T13:07:51Z",
+            "status": "IN_TRANSIT",
+            "location": "Bristol Hub, GB",
+            "detail": "Processed at facility"
+          },
+          {
+            "at": "2026-10-21T09:07:51Z",
+            "status": "OUT_FOR_DELIVERY",
+            "location": "Bristol, GB",
+            "detail": "With courier for delivery"
+          },
+          {
+            "at": "2026-10-21T13:07:51Z",
+            "status": "DELIVERED",
+            "location": "41 Pembroke Road, Bristol, GB",
+            "detail": "Delivered, signed for by D OSEI. Photo captured."
+          }
+        ]
+      },
+      "messages": [
+        {
+          "direction": "FROM_BUYER",
+          "at": "2026-10-25T13:07:51Z",
+          "text": "Has my order shipped? I can't find it."
+        },
+        {
+          "direction": "FROM_SELLER",
+          "at": "2026-10-25T13:07:51Z",
+          "text": "It was delivered and signed for on the 2026-10-21 \u2014 here is the tracking link and the delivery photo."
+        },
+        {
+          "direction": "FROM_BUYER",
+          "at": "2026-10-26T13:07:51Z",
+          "text": "That's not my signature."
+        }
+      ],
+      "listing": {
+        "title": "Fieldline ANC Headphones \u2014 Graphite",
+        "description": "Over-ear active noise cancelling headphones, 40h battery, USB-C, hard case included. Ships tracked and signed."
+      },
+      "refunds": [],
+      "buyer_history": {
+        "paypal_buyer_name": "Daniel Osei",
+        "first_order_at": "2026-10-17T13:07:51Z",
+        "orders_count": 1,
+        "lifetime_value": "149.00",
+        "prior_disputes": 0,
+        "deliveries_to_this_address": 1
+      }
+    },
+    {
+      "match": {
+        "dispute_id": "PP-D-10042",
+        "invoice_number": "HF-24206",
+        "transaction_id": "7HK93220LM4471P"
+      },
+      "order": {
+        "order_id": "HF-24206",
+        "placed_at": "2026-10-20T13:07:51Z",
+        "dispatched_at": "2026-10-21T13:07:51Z",
+        "status": "DELIVERED",
+        "items": [
+          {
+            "sku": "SW-MUG-4-OAT",
+            "name": "Stoneware Mug Set of 4 \u2014 Oatmeal",
+            "qty": 1,
+            "unit_price": "62.00",
+            "unit_count_in_set": 4,
+            "per_item_value": "15.50"
+          }
+        ],
+        "item_total": "62.00",
+        "shipping_total": "0.00",
+        "order_total": "62.00",
+        "ship_to": {
+          "name": "Priya Raman",
+          "address_line_1": "208 Ashfield Street",
+          "admin_area_2": "Manchester",
+          "postal_code": "M14 5QT",
+          "country_code": "GB",
+          "paypal_address_status": "CONFIRMED",
+          "matches_paypal_transaction_address": true
+        },
+        "signature_required": false
+      },
+      "tracking": {
+        "carrier_name": "ROYAL_MAIL",
+        "carrier_display": "Royal Mail Tracked 48",
+        "tracking_number": "RM419823746GB",
+        "current_status": "DELIVERED",
+        "delivered_at": "2026-10-23T13:07:51Z",
+        "signed_by": null,
+        "signature_image_on_file": false,
+        "delivery_photo_on_file": true,
+        "events": [
+          {
+            "at": "2026-10-21T13:07:51Z",
+            "status": "LABEL_CREATED",
+            "location": "Bristol, GB",
+            "detail": "Shipment information received"
+          },
+          {
+            "at": "2026-10-22T13:07:51Z",
+            "status": "IN_TRANSIT",
+            "location": "Midlands Hub, GB",
+            "detail": "Processed at facility"
+          },
+          {
+            "at": "2026-10-23T13:07:51Z",
+            "status": "DELIVERED",
+            "location": "Manchester, GB",
+            "detail": "Delivered"
+          }
+        ]
+      },
+      "messages": [
+        {
+          "direction": "FROM_BUYER",
+          "at": "2026-10-24T13:07:51Z",
+          "text": "One of the four mugs has a chip on the rim. Photo attached. The rest are lovely."
+        },
+        {
+          "direction": "FROM_SELLER",
+          "at": "2026-10-24T13:07:51Z",
+          "text": "So sorry about that \u2014 let me look into the best fix for you."
+        },
+        {
+          "direction": "FROM_BUYER",
+          "at": "2026-10-26T13:07:51Z",
+          "text": "Any update? I don't want to repack the whole set, I just want the chipped one sorted."
+        }
+      ],
+      "listing": {
+        "title": "Stoneware Mug Set of 4 \u2014 Oatmeal",
+        "description": "Four hand-glazed 350ml stoneware mugs. Dishwasher and microwave safe. Sold as a set of four; slight glaze variation between mugs is characteristic of the finish. Chips and cracks are not expected \u2014 contact us and we will put it right."
+      },
+      "refunds": [],
+      "buyer_history": {
+        "paypal_buyer_name": "Priya Raman",
+        "first_order_at": "2025-08-25T13:07:51Z",
+        "orders_count": 6,
+        "lifetime_value": "388.50",
+        "prior_disputes": 0,
+        "deliveries_to_this_address": 6
+      },
+      "photo_evidence": {
+        "buyer_photo_on_file": true,
+        "note": "Close-up of one mug rim with a 4mm chip. Other three mugs visible, intact."
+      }
+    }
+  ]
+}
